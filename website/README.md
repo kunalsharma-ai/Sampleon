@@ -44,7 +44,7 @@ src/
     Tour.jsx               auto-playing product tour in a 3D browser frame + lightbox
     ScreenWall.jsx         tilted wall of moving screenshots
     Difference.jsx         "why us": flip cards, usual way vs SampAudience
-    Ecosystem.jsx          orbit map: SUPPLY360, PROJEXA, ZAPX + panels
+    Ecosystem.jsx          orbit map: SUPPLY360, SampTrek, SampCode + panels
     Playground.jsx         interactive feasibility sliders (illustrative model)
     Trust.jsx, CTA.jsx, Footer.jsx
     fx/                    reusable effects: Reveal, Tilt, Counter, Magnetic, Lightbox, Icon, CursorGlow…

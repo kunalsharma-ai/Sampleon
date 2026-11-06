@@ -27,7 +27,7 @@ export default function Trust() {
           <div className="code-top"><span /><span /><span /><em>outcome.signed.json</em></div>
           <pre><code>
 <span className="k">POST</span> /v1/outcomes{'\n'}
-<span className="c">X-Sampledge-Client:</span> zapx{'\n'}
+<span className="c">X-Sampledge-Client:</span> sampcode{'\n'}
 <span className="c">X-Sampledge-Timestamp:</span> 1793961000{'\n'}
 <span className="c">X-Sampledge-Signature:</span> v1=9f2c…e71a{'\n\n'}
 {'{'}{'\n'}

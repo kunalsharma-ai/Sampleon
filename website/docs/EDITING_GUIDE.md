@@ -16,12 +16,12 @@ Everything visible comes from `src/content.js`. Each section has its own export 
    or any online converter.
 3. Reference it by file name (without `.webp`) in `content.js`: in `tour` (`img: 'my-screen'`) or in `wall`.
 
-Note: the current screenshots come from the SUPPLY360 / PROJEXA / ZAPX demo builds and some still say “SAMPLEON”.
+Note: the current screenshots come from the SUPPLY360 / SampTrek / SampCode demo builds and some still show the old names SAMPLEON, PROJEXA and ZAPX.
 When the in-product rebrand ships, re-capture and drop the new files in with the same names; nothing else changes.
 
 ## 3. Colours, fonts, spacing
 Tokens at the top of `src/styles/global.css` (`:root`):
-- Brand teal `--teal-*` matches the logo. Accents: `--coral`, `--violet`, `--amber` (PROJEXA), `--pink` (ZAPX), `--blue` (SUPPLY360).
+- Brand teal `--teal-*` matches the logo. Accents: `--coral`, `--violet`, `--amber` (SampTrek), `--pink` (SampCode), `--blue` (SUPPLY360).
 - Fonts: Manrope (text), Instrument Serif italic (accent words), Unbounded (big numbers), JetBrains Mono (data/IDs).
   They load from Google Fonts in `index.html`. To self-host, download them and replace the `<link>` with `@font-face` rules.
 - Each section's styles are grouped under a comment banner (`/* ── Hero ── */` etc.).

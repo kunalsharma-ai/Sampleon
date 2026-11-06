@@ -24,7 +24,7 @@ export default function Tour() {
     <section id="tour" className="section tour">
       <div className="container">
         <SectionHead num="03" eyebrow="Product tour" title="Real screens." accent="Real workflow."
-          lead="SampAudience lives where your team already works: inside SUPPLY360, PROJEXA and ZAPX. Click any screen to enlarge it." />
+          lead="SampAudience lives where your team already works: inside SUPPLY360, SampTrek and SampCode. Click any screen to enlarge it." />
         <div className="tour-grid" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
           <ul className="tour-tabs" role="tablist">
             {tour.map((x, k) => (
@@ -60,7 +60,7 @@ export default function Tour() {
             </AnimatePresence>
           </div>
         </div>
-        <p className="fine">Screens show demo data. Some still carry the product’s former name, SAMPLEON.</p>
+        <p className="fine">Screens show demo data. Some still show the former names: SAMPLEON (SampAudience), PROJEXA (SampTrek) and ZAPX (SampCode).</p>
       </div>
       <Lightbox src={zoom && shot(zoom)} onClose={() => setZoom(null)} />
     </section>

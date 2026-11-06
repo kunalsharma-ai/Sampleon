@@ -28,7 +28,7 @@ export const hero = {
   eyebrow: 'Audience marketplace · Supply execution engine',
   titleA: 'Ask the world.',
   titleB: 'Hear back.',
-  sub: 'SampAudience turns a research brief into the right respondents. Feasibility, AI audience matching, quotas, launch, batching and routing run in one engine, wired straight into SUPPLY360, PROJEXA and ZAPX.',
+  sub: 'SampAudience turns a research brief into the right respondents. Feasibility, AI audience matching, quotas, launch, batching and routing run in one engine, wired straight into SUPPLY360, SampTrek and SampCode.',
   ctaPrimary: 'Book a demo',
   ctaSecondary: 'See it work',
   // The hero "brief" card types these one after another.
@@ -67,7 +67,7 @@ export const stats = [
 // "How it works": the scroll-driven journey of one audience request.
 export const journey = [
   { k: 'Request', icon: 'Inbox', color: '#F5B544',
-    text: 'A PROJEXA project or a ZAPX survey sends an audience request with targets, quotas, IR, LOI and dates. It gets one ID, like AR-01JC9Y…, that follows it everywhere.' },
+    text: 'A SampTrek project or a SampCode survey sends an audience request with targets, quotas, IR, LOI and dates. It gets one ID, like AR-01JC9Y…, that follows it everywhere.' },
   { k: 'AI match', icon: 'Sparkles', color: '#A78BFA',
     text: 'Write who you need in plain words. SampAudience turns it into exact profile criteria and shows live counts as you refine.' },
   { k: 'Feasibility', icon: 'Gauge', color: '#5EEAD4',
@@ -107,7 +107,7 @@ export const capabilities = [
 
 export const tour = [
   { id: 'alloc', label: 'Audience allocation', img: 'wave6-sampleon',
-    text: 'Every request from PROJEXA and ZAPX on one board, from submitted to closed. Open one to see feasibility, quotas, batches and events.' },
+    text: 'Every request from SampTrek and SampCode on one board, from submitted to closed. Open one to see feasibility, quotas, batches and events.' },
   { id: 'feas', label: 'Feasibility studio', img: 'wave2-feasibility',
     text: 'Scenario columns side by side, a country waterfall from eligible to achievable and a confidence band.' },
   { id: 'seg', label: 'AI segmentation', img: 'wave2-segmentation',
@@ -120,9 +120,9 @@ export const tour = [
     text: 'Entry → eligibility → surveys with live quota state → validated outcomes, with path replay.' },
   { id: 'global', label: 'Global reach', img: 'wave6-global',
     text: 'Live survey traffic on a globe, with a fast 2D view and country drill-down.' },
-  { id: 'zapx', label: 'Inside ZAPX', img: 'zapx-sampleon-panel',
+  { id: 'zapx', label: 'Inside SampCode', img: 'zapx-sampleon-panel',
     text: 'Order an audience right from the survey’s Distribute tab. No project needed.' },
-  { id: 'projexa', label: 'Inside PROJEXA', img: 'projexa-sampleon-tab',
+  { id: 'projexa', label: 'Inside SampTrek', img: 'projexa-sampleon-tab',
     text: 'A project tab sends targets and quota cells, and shows fieldwork as it happens.' },
 ];
 
@@ -145,7 +145,7 @@ export const difference = {
     { topic: 'Quotas', them: 'Caps per supplier, over-quotas found late', us: 'Quota cells synced from the project, paced and auto-managed' },
     { topic: 'Duplicates', them: 'Deduped per supplier, if at all', us: 'Deduped across every panel by one identity' },
     { topic: 'Screen-outs', them: 'A dead end and a wasted respondent', us: 'Routed to another survey they qualify for' },
-    { topic: 'Workflow', them: 'Links and CSVs passed by e-mail', us: 'Native in PROJEXA and ZAPX, with signed events both ways' },
+    { topic: 'Workflow', them: 'Links and CSVs passed by e-mail', us: 'Native in SampTrek and SampCode, with signed events both ways' },
     { topic: 'Audit trail', them: 'Spread across tools and inboxes', us: 'Every event carries one request ID, from brief to outcome' },
   ],
   note: 'Comparison reflects common practice in the sample industry, not any single named vendor.',
@@ -154,9 +154,9 @@ export const difference = {
 export const ecosystem = [
   { id: 'supply', name: 'SUPPLY360', color: '#60A5FA', role: 'The respondent database',
     text: 'Owns every panellist, profile and reward. SampAudience counts and delivers through it; personal data stays inside.' },
-  { id: 'projexa', name: 'PROJEXA', color: '#F5B544', role: 'Projects & quotas',
+  { id: 'projexa', name: 'SampTrek', color: '#F5B544', role: 'Projects & quotas',
     text: 'Projects send targets and quota cells to SampAudience from a dedicated tab, and see fieldwork live.' },
-  { id: 'zapx', name: 'ZAPX', color: '#F472B6', role: 'Survey hosting',
+  { id: 'zapx', name: 'SampCode', color: '#F472B6', role: 'Survey hosting',
     text: 'Any survey can order an audience on its own. Outcomes come back as signed redirects.' },
 ];
 
