@@ -32,6 +32,10 @@ test('service calls must be signed by a known client, for their own platform', a
   assert.equal(wrongPlatform.status, 403);
   const invalid = await h.signed('projexa', 'POST', '/api/v1/audience-requests', requestBody({ countries: ['Germany'] }));
   assert.equal(invalid.status, 400);
+  // Source systems may read the attribute catalogue to map their own quota questions.
+  const cat = await h.signed('projexa', 'GET', '/api/v1/attributes');
+  assert.equal(cat.status, 200);
+  assert.ok(((await cat.json()) as { attributes: { key: string }[] }).attributes.some((a) => a.key === 'hcp.specialty'));
 });
 
 test('natural-language targeting becomes structured filters from the SUPPLY360 catalogue', async () => {

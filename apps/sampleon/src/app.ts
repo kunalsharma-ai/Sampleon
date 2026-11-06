@@ -125,7 +125,12 @@ export function buildApp(db: Db, cfg: Config) {
     const parsed = await parseTargeting(cfg, text, catalogue);
     return { ...parsed, problems: checkAgainstCatalogue(parsed.criteria, catalogue) };
   });
-  app.get('/api/v1/attributes', async (req) => { staff(actorOf(req)); return { attributes: await supply.attributes() }; });
+  // Staff and the source systems (PROJEXA maps its quota questions onto these attributes).
+  app.get('/api/v1/attributes', async (req) => {
+    const a = actorOf(req);
+    if (a.kind === 'user') staff(a);
+    return { attributes: await supply.attributes() };
+  });
 
   // ---- Events in
   app.post('/api/v1/events', async (req) => receiveEvent(db, actorOf(req), req.body));
