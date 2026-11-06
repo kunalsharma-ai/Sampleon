@@ -48,3 +48,8 @@ start.
 npm test                     # contracts + service tests (needs PostgreSQL; TEST_ADMIN_DATABASE_URL)
 node e2e/ecosystem/run.mjs   # both workflows across the four real services (see e2e/ecosystem/README.md)
 ```
+
+
+## Marketing website
+
+The SampAudience (formerly SAMPLEON) product showcase page is in [`website/`](website/README.md): a standalone Vite + React app, not part of the npm workspaces.
