@@ -2,6 +2,13 @@
 
 SAMPLEON is now called **SampAudience** (by Sampledge). Tagline: *Ask the world. Hear back.*
 
+## The other products
+
+PROJEXA is now **SampTrek** and ZAPX is now **SampCode**. The console shows those names
+(source filter, tiles, request table and detail), and targeting text understands both the
+new and the old names ("SampTrek project PRJ-1045", "SampCode survey ZPX-221"). The contract
+values `PROJEXA` and `ZAPX` (`source.platform`, client ids, filters in the API) are unchanged.
+
 ## What changed and what did not
 
 | Shown to people (renamed) | Technical identifiers (unchanged) |

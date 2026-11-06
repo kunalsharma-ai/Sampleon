@@ -51,12 +51,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
   <div class="grid2">
     <section><h2>Country quota performance</h2><table id="countries"></table></section>
     <section id="nlBox"><h2>Describe an audience</h2>
-      <textarea id="nl" rows="3" style="width:100%" placeholder="Find 1,500 cardiologists in the USA, UK and Germany with at least five years of professional experience for PROJEXA Project PRJ-1045"></textarea>
+      <textarea id="nl" rows="3" style="width:100%" placeholder="Find 1,500 cardiologists in the USA, UK and Germany with at least five years of professional experience for SampTrek Project PRJ-1045"></textarea>
       <div class="row" style="margin-top:8px"><button class="act" id="parse">Translate to filters</button></div><pre id="nlOut" hidden></pre></section>
   </div>
   <section><h2>Audience requests</h2>
     <div class="row">
-      <select id="fPlatform"><option value="">All sources</option><option>PROJEXA</option><option>ZAPX</option><option>EXTERNAL</option></select>
+      <select id="fPlatform"><option value="">All sources</option><option value="PROJEXA">SampTrek</option><option value="ZAPX">SampCode</option><option value="EXTERNAL">External</option></select>
       <select id="fStatus"><option value="">All statuses</option><option>submitted</option><option>feasibility_ready</option><option>approved</option><option>soft_launch</option><option>live</option><option>paused</option><option>closed</option><option>rejected</option><option>cancelled</option></select>
       <input id="fCountry" placeholder="Country, e.g. US" size="12">
     </div>
@@ -69,6 +69,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
+  // Contract values stay PROJEXA / ZAPX; people see SampTrek / SampCode.
+  const productName = (p) => ({ PROJEXA: 'SampTrek', ZAPX: 'SampCode', EXTERNAL: 'External' })[p] || p;
   const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'on') for (const [ev, fn] of Object.entries(v)) e.addEventListener(ev, fn); else if (k === 'class') e.className = v; else e.setAttribute(k, v); } for (const k of kids.flat()) e.append(k instanceof Node ? k : document.createTextNode(k ?? '')); return e; };
   const store = { get() { try { return sessionStorage.getItem('sampleon.token'); } catch { return null; } }, set(v) { try { v ? sessionStorage.setItem('sampleon.token', v) : sessionStorage.removeItem('sampleon.token'); } catch {} } };
   let token = store.get(); let me = null;
@@ -95,8 +97,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
   async function load() {
     const s = await api('GET', '/api/v1/dashboard/summary');
     const t = $('#tiles'); t.replaceChildren(
-      tile('PROJEXA projects requesting', n(s.requests.projexa.open), n(s.requests.projexa.total) + ' requests in total', { platform: 'PROJEXA' }),
-      tile('Independent ZAPX projects', n(s.requests.zapx.open), n(s.requests.zapx.total) + ' requests in total', { platform: 'ZAPX' }),
+      tile('SampTrek projects requesting', n(s.requests.projexa.open), n(s.requests.projexa.total) + ' requests in total', { platform: 'PROJEXA' }),
+      tile('Independent SampCode projects', n(s.requests.zapx.open), n(s.requests.zapx.total) + ' requests in total', { platform: 'ZAPX' }),
       tile('Active allocations', n(s.activeAllocations), n(s.activeSurveys) + ' active surveys', { status: 'live' }),
       tile('Eligible respondents', n(s.audience.eligible), n(s.audience.reachable) + ' reachable (SUPPLY360)'),
       tile('Invitations delivered', n(s.invitations.delivered), n(s.invitations.suppressed) + ' suppressed'),
@@ -122,7 +124,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
     const { data } = await api('GET', '/api/v1/dashboard/requests?' + q);
     $('#requests').replaceChildren(el('tr', {}, ...['Request', 'Source', 'Project', 'Organisation', 'Countries', 'Status', 'Progress'].map((h) => el('th', {}, h))),
       ...(data.length ? data.map((r) => el('tr', { class: 'click', on: { click: () => openDetail(r.id) } },
-        el('td', {}, r.title || r.id), el('td', {}, r.source_platform), el('td', {}, r.source_project_id), el('td', {}, r.organization_name), el('td', {}, r.countries.join(', ')),
+        el('td', {}, r.title || r.id), el('td', {}, productName(r.source_platform)), el('td', {}, r.source_project_id), el('td', {}, r.organization_name), el('td', {}, r.countries.join(', ')),
         el('td', {}, el('span', { class: 'pill ' + r.status }, r.status.replace('_', ' '))), el('td', {}, n(r.completes) + ' / ' + n(r.required_completes)))) : [el('tr', {}, el('td', { colspan: 7, class: 'muted' }, 'No requests match'))]));
   }
 
@@ -143,7 +145,7 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
     const f = d.feasibility;
     box.replaceChildren(
       el('h2', {}, (d.title || d.audienceRequestId) + ' · ' + d.audienceRequestId),
-      el('p', { class: 'muted' }, d.source.platform + ' ' + d.source.projectId + ' · survey ' + d.source.surveyId + ' · ' + d.organization.name + ' · ', el('span', { class: 'pill ' + d.status }, d.status)),
+      el('p', { class: 'muted' }, productName(d.source.platform) + ' ' + d.source.projectId + ' · survey ' + d.source.surveyId + ' · ' + d.organization.name + ' · ', el('span', { class: 'pill ' + d.status }, d.status)),
       actions,
       el('div', { class: 'grid2' },
         el('div', {}, el('h2', {}, 'Feasibility'), f ? el('table', {}, el('tr', {}, ...['Country', 'Eligible', 'Reachable', 'Est. completes', 'Target', 'Shortfall', 'Missing profile'].map((h) => el('th', {}, h))),

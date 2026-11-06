@@ -48,6 +48,8 @@ test('natural-language targeting becomes structured filters from the SUPPLY360 c
   assert.deepEqual(p.source, { platform: 'PROJEXA', projectId: 'PRJ-1045' });
   assert.deepEqual(p.problems, []);
   assert.equal(p.engine, 'rules');
+  const renamed = await json(await h.staff(h.tokens.manager, 'POST', '/api/v1/targeting/parse', { text: '300 nurses in the UK for SampCode survey ZPX-221' }));
+  assert.deepEqual(renamed.source, { platform: 'ZAPX', projectId: 'ZPX-221' });
   const odd = await json(await h.staff(h.tokens.manager, 'POST', '/api/v1/targeting/parse', { text: '200 women aged 25-34 in France who own a Tesla' }));
   const byAttr = (xs: { attribute: string }[]) => [...xs].sort((a, b) => a.attribute.localeCompare(b.attribute));
   assert.deepEqual(byAttr(odd.criteria), [{ attribute: 'demo.age', op: 'between', min: 25, max: 34 }, { attribute: 'demo.gender', op: 'in', values: ['female'] }]);
