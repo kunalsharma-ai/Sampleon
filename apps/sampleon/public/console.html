@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAMPLEON operations</title>
+<style>
+:root{--bg:#f5f6f8;--panel:#fff;--ink:#15171c;--muted:#5d6472;--line:#e2e5ea;--accent:#2f5bea;--ok:#13804b;--warn:#b25d00;--bad:#c22f2f}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--panel:#181b21;--ink:#e7e9ee;--muted:#9aa1ad;--line:#2a2f38;--accent:#7d9bff;--ok:#4cc48a;--warn:#f0a44b;--bad:#ff7a7a}}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+header{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:2}
+header h1{font-size:16px;margin:0;flex:1}header .who{color:var(--muted)}
+main{padding:16px;max-width:1280px;margin:0 auto}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.tile:hover{border-color:var(--accent)}.tile .k{color:var(--muted);font-size:12px}.tile .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}.tile .s{color:var(--muted);font-size:12px}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:16px;overflow-x:auto}
+section h2{font-size:14px;margin:0 0 10px}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--muted);font-weight:500;font-size:12px}
+tr.click{cursor:pointer}tr.click:hover td{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;border:1px solid var(--line)}
+.pill.live,.pill.soft_launch{color:var(--ok);border-color:var(--ok)}.pill.feasibility_ready{color:var(--warn);border-color:var(--warn)}.pill.rejected,.pill.cancelled{color:var(--bad);border-color:var(--bad)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:80px}.bar>i{display:block;height:100%;background:var(--accent)}
+input,select,textarea,button{font:inherit;color:inherit}input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+button.act{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:6px 12px;cursor:pointer}button.ghost{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.muted{color:var(--muted)}.err{color:var(--bad)}
+#login{max-width:420px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}#login input{width:100%;margin:8px 0}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;border-radius:6px;font-size:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <h1 style="font-size:18px;margin:0 0 6px">SAMPLEON operations</h1>
+  <p class="muted">Sign in with your SAMPLEON access token.</p>
+  <input id="tok" type="password" placeholder="son_…" autocomplete="off">
+  <button class="act" id="signin">Sign in</button> <span id="loginErr" class="err"></span>
+</div>
+<div id="app" hidden>
+<header><h1>SAMPLEON operations</h1><span class="who" id="who"></span><button class="ghost" id="refresh">Refresh</button><button class="ghost" id="out">Sign out</button></header>
+<main>
+  <div class="tiles" id="tiles"></div>
+  <div class="grid2">
+    <section><h2>Country quota performance</h2><table id="countries"></table></section>
+    <section id="nlBox"><h2>Describe an audience</h2>
+      <textarea id="nl" rows="3" style="width:100%" placeholder="Find 1,500 cardiologists in the USA, UK and Germany with at least five years of professional experience for PROJEXA Project PRJ-1045"></textarea>
+      <div class="row" style="margin-top:8px"><button class="act" id="parse">Translate to filters</button></div><pre id="nlOut" hidden></pre></section>
+  </div>
+  <section><h2>Audience requests</h2>
+    <div class="row">
+      <select id="fPlatform"><option value="">All sources</option><option>PROJEXA</option><option>ZAPX</option><option>EXTERNAL</option></select>
+      <select id="fStatus"><option value="">All statuses</option><option>submitted</option><option>feasibility_ready</option><option>approved</option><option>soft_launch</option><option>live</option><option>paused</option><option>closed</option><option>rejected</option><option>cancelled</option></select>
+      <input id="fCountry" placeholder="Country, e.g. US" size="12">
+    </div>
+    <table id="requests"></table>
+  </section>
+  <section id="detail" hidden></section>
+  <section id="failBox" hidden><h2>Integration failures</h2><div id="fails"></div></section>
+</main>
+</div>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const el = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'on') for (const [ev, fn] of Object.entries(v)) e.addEventListener(ev, fn); else if (k === 'class') e.className = v; else e.setAttribute(k, v); } for (const k of kids.flat()) e.append(k instanceof Node ? k : document.createTextNode(k ?? '')); return e; };
+  const store = { get() { try { return sessionStorage.getItem('sampleon.token'); } catch { return null; } }, set(v) { try { v ? sessionStorage.setItem('sampleon.token', v) : sessionStorage.removeItem('sampleon.token'); } catch {} } };
+  let token = store.get(); let me = null;
+  const api = async (method, path, body) => {
+    const r = await fetch(path, { method, headers: { authorization: 'Bearer ' + token, ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+    return data;
+  };
+  const n = (x) => (x ?? 0).toLocaleString();
+  const can = (...roles) => me && roles.includes(me.role);
+
+  async function signIn() {
+    try { me = await api('GET', '/api/v1/me'); $('#login').hidden = true; $('#app').hidden = false; $('#who').textContent = me.name + ' · ' + me.role.replace('_', ' '); load(); }
+    catch (e) { $('#login').hidden = false; $('#app').hidden = true; $('#loginErr').textContent = token ? e.message : ''; }
+  }
+  $('#signin').onclick = () => { token = $('#tok').value.trim(); store.set(token); signIn(); };
+  $('#out').onclick = () => { store.set(null); token = null; location.reload(); };
+  $('#refresh').onclick = () => load();
+  for (const id of ['#fPlatform', '#fStatus', '#fCountry']) $(id).addEventListener('change', loadRequests);
+
+  function tile(k, v, s, filter) { return el('button', { class: 'tile', on: { click: () => { if (filter) { $('#fPlatform').value = filter.platform || ''; $('#fStatus').value = filter.status || ''; loadRequests(); $('#requests').scrollIntoView({ behavior: 'smooth' }); } } } }, el('div', { class: 'k' }, k), el('div', { class: 'v' }, v), el('div', { class: 's' }, s || '')); }
+
+  async function load() {
+    const s = await api('GET', '/api/v1/dashboard/summary');
+    const t = $('#tiles'); t.replaceChildren(
+      tile('PROJEXA projects requesting', n(s.requests.projexa.open), n(s.requests.projexa.total) + ' requests in total', { platform: 'PROJEXA' }),
+      tile('Independent ZAPX projects', n(s.requests.zapx.open), n(s.requests.zapx.total) + ' requests in total', { platform: 'ZAPX' }),
+      tile('Active allocations', n(s.activeAllocations), n(s.activeSurveys) + ' active surveys', { status: 'live' }),
+      tile('Eligible respondents', n(s.audience.eligible), n(s.audience.reachable) + ' reachable (SUPPLY360)'),
+      tile('Invitations delivered', n(s.invitations.delivered), n(s.invitations.suppressed) + ' suppressed'),
+      tile('Survey participation', n(s.participation.started), n(s.participation.awaitingVerification) + ' awaiting verification'),
+      tile('Completion rate', s.completionRate == null ? '–' : s.completionRate + '%', n(s.participation.outcomes.complete) + ' verified completes'),
+      tile('Routing success', s.routing.successRate == null ? '–' : s.routing.successRate + '%', n(s.routing.routed) + ' of ' + n(s.routing.decisions) + ' routed'),
+      tile('Remaining sample', n(s.remainingSample), 'completes still needed'),
+      tile('Pending approvals', n(s.pendingApprovals), 'waiting for a supply approver', { status: 'feasibility_ready' }),
+      ...(s.integrationFailures ? [tile('Integration failures', n(s.integrationFailures.deadLetters + s.integrationFailures.recentErrors), n(s.integrationFailures.retrying) + ' retrying')] : []),
+      ...(s.rewardLiabilities ? [tile('Reward liabilities', n(s.rewardLiabilities.pendingPoints + s.rewardLiabilities.confirmedPoints) + ' pts', n(s.rewardLiabilities.pendingPoints) + ' pending confirmation')] : []),
+    );
+    $('#countries').replaceChildren(el('tr', {}, el('th', {}, 'Country'), el('th', {}, 'Completes'), el('th', {}, 'Target'), el('th', {}, '')),
+      ...(s.countryQuotas.length ? s.countryQuotas.map((c) => el('tr', {}, el('td', {}, c.country), el('td', {}, n(c.completes)), el('td', {}, n(c.target)), el('td', {}, barOf(c.pct)))) : [el('tr', {}, el('td', { colspan: 4, class: 'muted' }, 'No active fieldwork'))]));
+    $('#nlBox').hidden = !can('supply_admin', 'supply_manager', 'supply_approver', 'viewer');
+    $('#failBox').hidden = !s.integrationFailures;
+    if (s.integrationFailures) loadFailures();
+    loadRequests();
+  }
+  const barOf = (pct) => { const b = el('div', { class: 'bar', title: pct + '%' }, el('i')); b.firstChild.style.width = Math.min(100, pct) + '%'; return b; };
+
+  async function loadRequests() {
+    const q = new URLSearchParams(); if ($('#fPlatform').value) q.set('platform', $('#fPlatform').value); if ($('#fStatus').value) q.set('status', $('#fStatus').value); if ($('#fCountry').value) q.set('country', $('#fCountry').value.toUpperCase());
+    const { data } = await api('GET', '/api/v1/dashboard/requests?' + q);
+    $('#requests').replaceChildren(el('tr', {}, ...['Request', 'Source', 'Project', 'Organisation', 'Countries', 'Status', 'Progress'].map((h) => el('th', {}, h))),
+      ...(data.length ? data.map((r) => el('tr', { class: 'click', on: { click: () => openDetail(r.id) } },
+        el('td', {}, r.title || r.id), el('td', {}, r.source_platform), el('td', {}, r.source_project_id), el('td', {}, r.organization_name), el('td', {}, r.countries.join(', ')),
+        el('td', {}, el('span', { class: 'pill ' + r.status }, r.status.replace('_', ' '))), el('td', {}, n(r.completes) + ' / ' + n(r.required_completes)))) : [el('tr', {}, el('td', { colspan: 7, class: 'muted' }, 'No requests match'))]));
+  }
+
+  async function openDetail(id) {
+    const d = await api('GET', '/api/v1/dashboard/requests/' + encodeURIComponent(id));
+    const box = $('#detail'); box.hidden = false;
+    const actions = el('div', { class: 'row' });
+    const act = (label, fn) => actions.append(el('button', { class: 'act', on: { click: async () => { try { await fn(); await load(); openDetail(id); } catch (e) { alert(e.message); } } } }, label));
+    const base = '/api/v1/audience-requests/' + encodeURIComponent(id);
+    if (can('supply_admin', 'supply_manager', 'supply_approver') && ['submitted', 'feasibility_ready', 'approved', 'soft_launch', 'live', 'paused'].includes(d.status)) act('Recalculate feasibility', () => api('POST', base + '/feasibility'));
+    if (can('supply_admin', 'supply_approver') && d.status === 'feasibility_ready') { act('Approve audience', () => api('POST', base + '/approve', {})); act('Reject', () => api('POST', base + '/reject', { note: prompt('Reason') || undefined })); }
+    if (can('supply_admin', 'supply_manager')) {
+      if (d.status === 'approved') { act('Soft launch', () => api('POST', base + '/launch', { mode: 'soft' })); act('Full launch', () => api('POST', base + '/launch', { mode: 'full' })); }
+      if (['soft_launch', 'paused'].includes(d.status)) act('Full launch', () => api('POST', base + '/launch', { mode: 'full' }));
+      if (['soft_launch', 'live'].includes(d.status)) { act('Pause', () => api('POST', base + '/pause', {})); act('Schedule batch', () => api('POST', base + '/batches', { size: Number(prompt('Invitations in this batch', '500')) })); }
+      if (d.status === 'paused') act('Resume', () => api('POST', base + '/resume', {}));
+    }
+    const f = d.feasibility;
+    box.replaceChildren(
+      el('h2', {}, (d.title || d.audienceRequestId) + ' · ' + d.audienceRequestId),
+      el('p', { class: 'muted' }, d.source.platform + ' ' + d.source.projectId + ' · survey ' + d.source.surveyId + ' · ' + d.organization.name + ' · ', el('span', { class: 'pill ' + d.status }, d.status)),
+      actions,
+      el('div', { class: 'grid2' },
+        el('div', {}, el('h2', {}, 'Feasibility'), f ? el('table', {}, el('tr', {}, ...['Country', 'Eligible', 'Reachable', 'Est. completes', 'Target', 'Shortfall', 'Missing profile'].map((h) => el('th', {}, h))),
+          ...Object.entries(f.byCountry).map(([c, v]) => el('tr', {}, el('td', {}, c), el('td', {}, n(v.eligible)), el('td', {}, n(v.reachable)), el('td', {}, n(v.estimatedCompletes)), el('td', {}, n(v.target)), el('td', {}, n(v.shortfall)), el('td', {}, Object.entries(v.missingProfile).map(([k, x]) => k + ': ' + x).join(', ') || '–'))))
+          : el('p', { class: 'muted' }, 'Not calculated yet')),
+        el('div', {}, el('h2', {}, 'Quotas'), el('table', {}, el('tr', {}, ...['Quota', 'Completes', 'Target', ''].map((h) => el('th', {}, h))),
+          ...d.quotas.map((q) => el('tr', {}, el('td', {}, q.label || q.id), el('td', {}, n(q.completes)), el('td', {}, n(q.target)), el('td', {}, barOf(q.target ? Math.round(q.completes / q.target * 100) : 0))))))),
+      el('div', { class: 'grid2' },
+        el('div', {}, el('h2', {}, 'Batches'), el('table', {}, el('tr', {}, ...['Mode', 'Size', 'When', 'Status', 'Delivered', 'Suppressed'].map((h) => el('th', {}, h))),
+          ...d.batches.map((b) => el('tr', {}, el('td', {}, b.mode), el('td', {}, n(b.size)), el('td', {}, new Date(b.scheduled_at).toLocaleString()), el('td', {}, b.status), el('td', {}, n(b.delivered)), el('td', {}, n(b.suppressed)))))),
+        el('div', {}, el('h2', {}, 'Outcomes by country'), el('table', {}, el('tr', {}, el('th', {}, 'Country'), el('th', {}, 'Outcome'), el('th', {}, 'Sessions')),
+          ...d.sessionsByCountry.map((s) => el('tr', {}, el('td', {}, s.country), el('td', {}, s.status), el('td', {}, n(s.n))))))),
+      el('h2', {}, 'Routing decisions'), el('table', {}, el('tr', {}, ...['When', 'Trigger', 'Routed to', 'Considered'].map((h) => el('th', {}, h))),
+        ...d.routingDecisions.map((r) => el('tr', {}, el('td', {}, new Date(r.created_at).toLocaleString()), el('td', {}, r.trigger), el('td', {}, r.to_request || 'ended'), el('td', {}, n(r.considered))))),
+      ...(d.events.length ? [el('h2', {}, 'Events sent'), el('table', {}, el('tr', {}, ...['Event', 'To', 'Status', 'Attempts', 'Last error'].map((h) => el('th', {}, h))),
+        ...d.events.map((e) => el('tr', {}, el('td', {}, e.type), el('td', {}, e.destination), el('td', {}, e.status), el('td', {}, n(e.attempts)), el('td', {}, e.last_error || ''))))] : []),
+    );
+    box.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function loadFailures() {
+    const f = await api('GET', '/api/v1/dashboard/failures');
+    const rows = [...f.deadLetters.map((d) => ({ when: d.created_at, what: 'Event ' + d.type + ' to ' + d.destination, err: (d.last_status ? 'HTTP ' + d.last_status + ' ' : '') + (d.last_error || ''), id: d.id })), ...f.errors.map((e) => ({ when: e.created_at, what: e.system + ' ' + e.operation, err: e.error }))];
+    $('#fails').replaceChildren(rows.length ? el('table', {}, el('tr', {}, el('th', {}, 'When'), el('th', {}, 'What'), el('th', {}, 'Error'), el('th', {}, '')),
+      ...rows.map((r) => el('tr', {}, el('td', {}, new Date(r.when).toLocaleString()), el('td', {}, r.what), el('td', {}, r.err.slice(0, 160)),
+        el('td', {}, r.id && can('supply_admin', 'supply_manager') ? el('button', { class: 'ghost', on: { click: async () => { await api('POST', '/api/v1/dashboard/failures/' + r.id + '/replay'); load(); } } }, 'Replay') : '')))) : el('p', { class: 'muted' }, 'No failures'));
+  }
+
+  $('#parse').onclick = async () => { const out = $('#nlOut'); out.hidden = false; try { out.textContent = JSON.stringify(await api('POST', '/api/v1/targeting/parse', { text: $('#nl').value }), null, 2); } catch (e) { out.textContent = e.message; } };
+  signIn();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "sampledge-sampleon",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @sampledge/contracts && npm run build -w @sampledge/sampleon",
+    "test": "npm run build && npm test -w @sampledge/contracts && npm test -w @sampledge/sampleon",
+    "typecheck": "npm run build -w @sampledge/contracts && npm run typecheck -w @sampledge/sampleon",
+    "e2e:ecosystem": "npm run build && node e2e/ecosystem/run.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.9.2",
+    "@types/node": "22.20.5"
+  }
+}

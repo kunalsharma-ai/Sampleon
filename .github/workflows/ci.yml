@@ -1,0 +1,38 @@
+name: CI
+# Fits GitHub Free for a private repository (2,000 Actions minutes a month): a newer push cancels
+# the run it replaces and a stuck run stops after 20 minutes.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  test:
+    # Set the repository variable CI_RUNNER to "self-hosted" to run on your own machine, which costs
+    # no Actions minutes (it needs Docker for the Postgres service). Default: GitHub's runner.
+    runs-on: ${{ vars.CI_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: sampleon
+          POSTGRES_PASSWORD: sampleon
+          POSTGRES_DB: sampleon
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U sampleon" --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+        env:
+          TEST_ADMIN_DATABASE_URL: postgresql://sampleon:sampleon@localhost:5432/postgres
