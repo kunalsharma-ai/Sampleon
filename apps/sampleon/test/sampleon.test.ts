@@ -297,6 +297,11 @@ test('dashboard: cross-platform tiles, drill-down and role-based scope', async (
   assert.equal((await h.staff('son_nope', 'GET', '/api/v1/dashboard/summary')).status, 401);
   const html = await fetch(`${h.base}/console`);
   assert.equal(html.status, 200);
+  assert.match(await html.text(), /<title>SampAudience operations<\/title>/);
+  const logo = await fetch(`${h.base}/brand/sampaudience-logo-light.svg`);
+  assert.equal(logo.status, 200);
+  assert.equal(logo.headers.get('content-type'), 'image/svg+xml');
+  assert.equal((await fetch(`${h.base}/brand/..%2Fconsole.html`)).status, 404);
 });
 
 test('outbox: a refusing receiver is dead-lettered, shown as an integration failure, and can be replayed', async () => {

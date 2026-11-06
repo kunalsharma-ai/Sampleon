@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import Fastify, { type FastifyReply, type FastifyRequest } from 'fastify';
 import { z } from 'zod';
@@ -159,6 +159,16 @@ export function buildApp(db: Db, cfg: Config) {
   const consoleHtml = readFileSync(join(__dirname, '..', '..', 'public', 'console.html'), 'utf8');
   app.get('/console', async (_req, reply) => reply.type('text/html; charset=utf-8').header('cache-control', 'no-store').send(consoleHtml));
   app.get('/', async (_req, reply) => reply.redirect('/console'));
+
+  // SampAudience brand assets (the product's display name; the service id stays "sampleon").
+  const brandDir = join(__dirname, '..', '..', 'public', 'brand');
+  const brandFiles = new Map(readdirSync(brandDir).filter((f) => /\.(svg|png)$/.test(f)).map((f) => [f, readFileSync(join(brandDir, f))]));
+  app.get<{ Params: { file: string } }>('/brand/:file', async (req, reply) => {
+    const body = brandFiles.get(req.params.file);
+    if (!body) return reply.code(404).send({ error: 'not_found' });
+    return reply.type(req.params.file.endsWith('.svg') ? 'image/svg+xml' : 'image/png')
+      .header('cache-control', 'public, max-age=86400').header('x-content-type-options', 'nosniff').send(body);
+  });
 
   return { app, supply };
 }

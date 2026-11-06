@@ -3,13 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SAMPLEON operations</title>
+<title>SampAudience operations</title>
+<link rel="icon" type="image/svg+xml" href="/brand/sampaudience-icon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="/brand/sampaudience-icon-512.png">
+<link rel="apple-touch-icon" href="/brand/sampaudience-icon-512.png">
 <style>
-:root{--bg:#f5f6f8;--panel:#fff;--ink:#15171c;--muted:#5d6472;--line:#e2e5ea;--accent:#2f5bea;--ok:#13804b;--warn:#b25d00;--bad:#c22f2f}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--panel:#181b21;--ink:#e7e9ee;--muted:#9aa1ad;--line:#2a2f38;--accent:#7d9bff;--ok:#4cc48a;--warn:#f0a44b;--bad:#ff7a7a}}
+:root{--bg:#f5f6f8;--panel:#fff;--ink:#15171c;--muted:#5d6472;--line:#e2e5ea;--accent:#0F766E;--ok:#13804b;--warn:#b25d00;--bad:#c22f2f}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--panel:#181b21;--ink:#e7e9ee;--muted:#9aa1ad;--line:#2a2f38;--accent:#2DD4BF;--ok:#4cc48a;--warn:#f0a44b;--bad:#ff7a7a}}
 *{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
 header{display:flex;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:2}
-header h1{font-size:16px;margin:0;flex:1}header .who{color:var(--muted)}
+header h1{font-size:16px;margin:0;flex:1;display:flex;align-items:center;gap:10px}
+.brand{display:block;height:36px;width:auto}.brand.on-dark{display:none}
+@media (prefers-color-scheme:dark){.brand.on-light{display:none}.brand.on-dark{display:block}}
+header .who{color:var(--muted)}
 main{padding:16px;max-width:1280px;margin:0 auto}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px}
 .tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;text-align:left;color:inherit;font:inherit}
@@ -23,6 +29,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:color-mix(in srgb,var(--acc
 .bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;min-width:80px}.bar>i{display:block;height:100%;background:var(--accent)}
 input,select,textarea,button{font:inherit;color:inherit}input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
 button.act{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:6px 12px;cursor:pointer}button.ghost{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+@media (prefers-color-scheme:dark){button.act{color:#04201d}}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.muted{color:var(--muted)}.err{color:var(--bad)}
 #login{max-width:420px;margin:12vh auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}#login input{width:100%;margin:8px 0}
 pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;border-radius:6px;font-size:12px}
@@ -31,13 +38,14 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);padding:8px;
 </head>
 <body>
 <div id="login" hidden>
-  <h1 style="font-size:18px;margin:0 0 6px">SAMPLEON operations</h1>
-  <p class="muted">Sign in with your SAMPLEON access token.</p>
+  <div style="margin:0 0 12px"><img style="height:48px" class="brand on-light" src="/brand/sampaudience-logo-light.svg" alt="SampAudience by Sampledge"><img style="height:48px" class="brand on-dark" src="/brand/sampaudience-logo-dark.svg" alt="SampAudience by Sampledge"></div>
+  <h1 style="font-size:18px;margin:0 0 6px">Operations console</h1>
+  <p class="muted">Sign in with your SampAudience access token.</p>
   <input id="tok" type="password" placeholder="son_…" autocomplete="off">
   <button class="act" id="signin">Sign in</button> <span id="loginErr" class="err"></span>
 </div>
 <div id="app" hidden>
-<header><h1>SAMPLEON operations</h1><span class="who" id="who"></span><button class="ghost" id="refresh">Refresh</button><button class="ghost" id="out">Sign out</button></header>
+<header><h1><img class="brand on-light" src="/brand/sampaudience-logo-light.svg" alt="SampAudience by Sampledge"><img class="brand on-dark" src="/brand/sampaudience-logo-dark.svg" alt="SampAudience by Sampledge"><span class="muted" style="font-weight:500">Operations</span></h1><span class="who" id="who"></span><button class="ghost" id="refresh">Refresh</button><button class="ghost" id="out">Sign out</button></header>
 <main>
   <div class="tiles" id="tiles"></div>
   <div class="grid2">

@@ -258,7 +258,7 @@ export async function calculateFeasibility(db: Db, cfg: Config, supply: Supply36
     recommendedAllocation,
     assumptions: [
       `Reachable = eligible, consented, active within ${cfg.activeWithinDays} days, under ${cfg.fatigueMaxInvites} invitations per ${cfg.fatigueWindowDays} days, not excluded`,
-      `Estimated completes = reachable × response rate × incidence (${ir}); response rate from SAMPLEON history, default ${cfg.defaultResponseRate}`,
+      `Estimated completes = reachable × response rate × incidence (${ir}); response rate from SampAudience history, default ${cfg.defaultResponseRate}`,
     ],
   };
 }
