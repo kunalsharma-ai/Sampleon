@@ -48,6 +48,8 @@ test('natural-language targeting becomes structured filters from the SUPPLY360 c
   assert.deepEqual(p.source, { platform: 'PROJEXA', projectId: 'PRJ-1045' });
   assert.deepEqual(p.problems, []);
   assert.equal(p.engine, 'rules');
+  const renamed = await json(await h.staff(h.tokens.manager, 'POST', '/api/v1/targeting/parse', { text: '300 nurses in the UK for SampCode survey ZPX-221' }));
+  assert.deepEqual(renamed.source, { platform: 'ZAPX', projectId: 'ZPX-221' });
   const odd = await json(await h.staff(h.tokens.manager, 'POST', '/api/v1/targeting/parse', { text: '200 women aged 25-34 in France who own a Tesla' }));
   const byAttr = (xs: { attribute: string }[]) => [...xs].sort((a, b) => a.attribute.localeCompare(b.attribute));
   assert.deepEqual(byAttr(odd.criteria), [{ attribute: 'demo.age', op: 'between', min: 25, max: 34 }, { attribute: 'demo.gender', op: 'in', values: ['female'] }]);
@@ -297,6 +299,11 @@ test('dashboard: cross-platform tiles, drill-down and role-based scope', async (
   assert.equal((await h.staff('son_nope', 'GET', '/api/v1/dashboard/summary')).status, 401);
   const html = await fetch(`${h.base}/console`);
   assert.equal(html.status, 200);
+  assert.match(await html.text(), /<title>SampAudience operations<\/title>/);
+  const logo = await fetch(`${h.base}/brand/sampaudience-logo-light.svg`);
+  assert.equal(logo.status, 200);
+  assert.equal(logo.headers.get('content-type'), 'image/svg+xml');
+  assert.equal((await fetch(`${h.base}/brand/..%2Fconsole.html`)).status, 404);
 });
 
 test('outbox: a refusing receiver is dead-lettered, shown as an integration failure, and can be replayed', async () => {

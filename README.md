@@ -1,4 +1,16 @@
-# SAMPLEON
+<p>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="apps/sampleon/public/brand/sampaudience-logo-dark.svg">
+    <img src="apps/sampleon/public/brand/sampaudience-logo-light.svg" alt="SampAudience by Sampledge" height="64">
+  </picture>
+</p>
+
+# SampAudience (formerly SAMPLEON)
+
+> **Ask the world. Hear back.** SampAudience is the product name shown to people. The service,
+> repository, package, API paths, environment variables, client ids (`sampleon`) and event
+> source (`SAMPLEON`) keep their technical name so existing integrations keep working. See
+> [docs/BRAND.md](docs/BRAND.md).
 
 SAMPLEON is the Sampledge audience, invitation and routing engine. It sits between the systems
 that own projects and surveys and the system that owns respondents:

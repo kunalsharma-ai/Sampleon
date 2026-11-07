@@ -69,10 +69,11 @@ export function parseWithRules(text: string, catalogue: AttributeDef[]): ParsedT
 
   // Source project reference.
   let source: ParsedTargeting['source'] = { platform: null, projectId: null };
-  const proj = /\b(projexa|zapx)?\s*(?:project|survey)?\s*\b((?:PRJ|PRX|ZPX)-?\d{2,})\b/i.exec(text);
+  // SampTrek was PROJEXA and SampCode was ZAPX; both names are understood.
+  const proj = /\b(projexa|samptrek|zapx|sampcode)?\s*(?:project|survey)?\s*\b((?:PRJ|PRX|ZPX)-?\d{2,})\b/i.exec(text);
   if (proj) {
     const id = proj[2]!.toUpperCase();
-    source = { platform: proj[1] ? (proj[1].toUpperCase() as 'PROJEXA' | 'ZAPX') : id.startsWith('ZPX') ? 'ZAPX' : 'PROJEXA', projectId: id };
+    source = { platform: proj[1] ? (/^(zapx|sampcode)$/i.test(proj[1]) ? 'ZAPX' : 'PROJEXA') : id.startsWith('ZPX') ? 'ZAPX' : 'PROJEXA', projectId: id };
     mark(proj.index + 1, proj[0].length);
   }
 
